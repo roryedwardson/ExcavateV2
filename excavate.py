@@ -20,14 +20,21 @@ winScore = gridWidth * 2
 
 
 def display():
-    print("_" * ((gridWidth * 4)+1))
+    print("_" * ((gridWidth**2) - 2))  # Needs work to allow for different grid sizes
     for line in grid:
-        print("|", end="")
+        print("| ", end="")
+        ln_counter = 0
         for i in line:
-            print(i + "\t", end="")
-        print("|")
+            if ln_counter < gridWidth-1:
+                print(i, "\t", end="")
+                ln_counter += 1
+            elif ln_counter == gridWidth-1:
+                print(i, "|", end="")
+
+        print("")
         # print(line)
-    print(("¯" * (gridWidth*2)) + f"{score}" + ("¯" * (gridWidth*2)))
+    print(("¯" * ((11*gridWidth) // 5) + f"{score}" + ("¯" * ((11*gridWidth) // 5))))
+    # Needs work to allow for different grid sizes
 
 
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
