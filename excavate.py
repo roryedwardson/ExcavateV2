@@ -16,7 +16,7 @@ for y in range(gridHeight):
 # Create score variable
 score = 0
 
-winScore = gridWidth * 2
+winScore = gridWidth * 3
 
 
 def display():
@@ -34,12 +34,14 @@ def display():
 
         print("")
         # print(line)
-    print(("‾" * (gridWidth + 1)) + f"{score}" + ("‾" * (gridWidth + 1)))
+    print(("‾" * ((2 * (gridWidth + 1)) + 1)))
+    print((" " * ((3 * gridWidth) // 2) + f"Score: {score}"))
     # Needs work to allow for different grid sizes, see above...
 
 
 def space():
     print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+
 
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
 # grid[2][2] = "x"
@@ -147,10 +149,11 @@ def excavate_x():
 
 
 # Set initial position of x using random integers
-randomY = random.randrange(0, gridHeight)
-randomX = random.randrange(0, gridWidth)
+def generate_x():
+    random_y = random.randrange(0, gridHeight)
+    random_x = random.randrange(0, gridWidth)
 
-grid[randomY][randomX] = "x"
+    grid[random_y][random_x] = "x"
 
 
 def generate_obstacle():
@@ -193,6 +196,7 @@ def count_spaces():
 
 
 def main():
+    generate_x()
     for i in range(gridWidth):
         generate_obstacle()
     running = True
@@ -204,40 +208,58 @@ def main():
         # obstacle_trigger()
         generate_obstacle()
         display()
-        time.sleep(0.2)
+        time.sleep(0.1)
         spaces_left = count_spaces()  # accelerate rocks appearing when there are only a few spaces left
         if spaces_left <= gridWidth:
             generate_obstacle()
         if spaces_left <= (gridWidth // 2):
             generate_obstacle()
         if you_win():
-            print(f"You smashed {winScore} rocks. You win!")
-            time.sleep(3)
+            print("\n" + f"You smashed {winScore} rocks. You win!")
+            time.sleep(5)
             running = False
         if you_lose():
             py, px = get_current_pos("x")
             grid[py][px] = "0"
             display()
-            print("You lose. Too bad...")
-            time.sleep(3)
+            print("\nYou lose. Too bad...")
+            time.sleep(5)
             running = False
 
 
 def intro():
     text = ["Welcome to Excavate.\n",
+            "You're in a remote cave,", "with no-one around for miles.\n",
+            "Rocks are falling all around you.\n",
+            "You have no choice but to smash your way out,", "with your trusty pickaxe.\n",
+            "If the cave fills up with rocks,", "you're not getting out alive.\n",
             "Use WASD to move.\n",
-            "Press I to destroy rocks.\n",
-            f"Score {winScore} to win.\n",
-            "Starting in 3...\n",
-            "2...\n",
-            "1...\n"]
+            "Press I to smash rocks.\n",
+            f"Score {winScore} to win.\n"]
 
     for line in text:
-        for char in line:
-            print(char, end="")
-            time.sleep(0.08)
+        print(line, end="\n")
+        time.sleep(2)
 
-    time.sleep(1)
+    countdown = ["Starting in 3...\n",
+                 "2...\n",
+                 "1...\n"]
+
+    for line in countdown:
+        print(line, end="\n")
+        time.sleep(1)
+
+
+# def play_again_or_quit():
+#     quit_codes = ["Q", "QUIT"]
+#     play_codes = ["P"]
+#
+#     user_choice = input("To play again, press P. To quit, press Q.")
+#
+#     if user_choice.upper in quit_codes:
+#         quit()
+#     elif user_choice.upper in play_codes:
+#         main()
 
 
 intro()
