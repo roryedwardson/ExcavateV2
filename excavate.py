@@ -40,7 +40,7 @@ def display():
 
 
 def space():
-    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
+    print(40*"\n", end="")
 
 
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
