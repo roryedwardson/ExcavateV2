@@ -34,7 +34,7 @@ def display():
         print("")
         # print(line)
     print(("¯" * ((11*gridWidth) // 5) + f"{score}" + ("¯" * ((11*gridWidth) // 5))))
-    # Needs work to allow for different grid sizes, see above.
+    # Needs work to allow for different grid sizes, see above...
 
 
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
