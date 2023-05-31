@@ -20,15 +20,18 @@ winScore = gridWidth * 2
 
 
 def display():
-    print("_" * (gridWidth * 5))
+    print("_" * ((gridWidth * 4)+1))
     for line in grid:
-        print(line)
-    print(("¯" * (gridWidth * 2)) + f"\t{score}\t" + ("¯" * (gridWidth * 2)))
+        print("|", end="")
+        for i in line:
+            print(i + "\t", end="")
+        print("|")
+        # print(line)
+    print(("¯" * (gridWidth*2)) + f"{score}" + ("¯" * (gridWidth*2)))
 
 
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
 # grid[2][2] = "x"
-
 
 def is_empty(char):
     if char == " ":
