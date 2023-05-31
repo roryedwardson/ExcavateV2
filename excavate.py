@@ -4,7 +4,7 @@ import random
 
 grid = []
 
-gridWidth = 5
+gridWidth = 10
 gridHeight = gridWidth
 
 for y in range(gridHeight):
@@ -20,22 +20,26 @@ winScore = gridWidth * 2
 
 
 def display():
-    print("_" * ((gridWidth**2) - 2))  # Needs work to allow for different grid sizes
+    space()
+    print("_" * ((2 * (gridWidth + 1)) + 1))  # Needs work to allow for different grid sizes
     for line in grid:
         print("| ", end="")
         ln_counter = 0
         for i in line:
-            if ln_counter < gridWidth-1:
-                print(i, "\t", end="")
+            if ln_counter < gridWidth - 1:
+                print(i, "", end="")
                 ln_counter += 1
-            elif ln_counter == gridWidth-1:
+            elif ln_counter == gridWidth - 1:
                 print(i, "|", end="")
 
         print("")
         # print(line)
-    print(("¯" * ((11*gridWidth) // 5) + f"{score}" + ("¯" * ((11*gridWidth) // 5))))
+    print(("‾" * (gridWidth + 1)) + f"{score}" + ("‾" * (gridWidth + 1)))
     # Needs work to allow for different grid sizes, see above...
 
+
+def space():
+    print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
 # grid[2][2] = "x"
@@ -150,11 +154,11 @@ grid[randomY][randomX] = "x"
 
 
 def generate_obstacle():
-    randY = random.randrange(gridHeight)
-    randX = random.randrange(gridWidth)
+    rand_y = random.randrange(gridHeight)
+    rand_x = random.randrange(gridWidth)
 
-    if grid[randY][randX] != "x":
-        grid[randY][randX] = "0"
+    if grid[rand_y][rand_x] != "x":
+        grid[rand_y][rand_x] = "0"
 
 
 def obstacle_trigger():
@@ -172,10 +176,20 @@ def you_win():
 
 # Check for lose state, which occurs when there are no empty spaces left in grid.
 def you_lose():
-    if any(" " in x for x in grid):
+    if any(" " in z for z in grid):
         return False
     else:
         return True
+
+
+def count_spaces():
+    space_count = 0
+    for col in grid:
+        for r in col:
+            for i in r:
+                if i == " ":
+                    space_count += 1
+    return space_count
 
 
 def main():
@@ -190,12 +204,22 @@ def main():
         # obstacle_trigger()
         generate_obstacle()
         display()
-        time.sleep(0.5)
+        time.sleep(0.2)
+        spaces_left = count_spaces()  # accelerate rocks appearing when there are only a few spaces left
+        if spaces_left <= gridWidth:
+            generate_obstacle()
+        if spaces_left <= (gridWidth // 2):
+            generate_obstacle()
         if you_win():
             print(f"You smashed {winScore} rocks. You win!")
+            time.sleep(3)
             running = False
         if you_lose():
+            py, px = get_current_pos("x")
+            grid[py][px] = "0"
+            display()
             print("You lose. Too bad...")
+            time.sleep(3)
             running = False
 
 
@@ -212,6 +236,8 @@ def intro():
         for char in line:
             print(char, end="")
             time.sleep(0.08)
+
+    time.sleep(1)
 
 
 intro()
