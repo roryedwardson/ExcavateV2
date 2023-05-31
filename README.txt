@@ -1,6 +1,9 @@
 *** Excavation ***
 
+For intended display, run included excavate.bat file to launch excavate.py in Command Prompt.
 
+
+*** Controls/Instructions ***
 
 Use WASD to move.
 
