@@ -2,6 +2,8 @@ import keyboard
 import time
 import random
 
+speed = 0.12  # define speed as a variable to reuse later
+
 # Generate grid
 grid = []
 
@@ -22,11 +24,9 @@ score = 0
 winScore = gridWidth * 3
 
 
-
 # Display current state of grid to user, with top, bottom and side borders
 def display():
     space()
-    # print((" " * 7) + "EXCAVATE!")
     print((" " * 7) + f"Target: {winScore}")
     print("_" * ((2 * (gridWidth + 1)) + 1))  # Needs work to allow for different grid sizes
     for line in grid:
@@ -41,13 +41,12 @@ def display():
                 print(i, "|", end="")
 
         print("")
-        # print(line)
     print(("‾" * ((2 * (gridWidth + 1)) + 1)))
     print((" " * ((3 * gridWidth) // 2) + f"Score: {score}"))
     # Needs work to allow for different grid sizes, see above...
 
 
-def space():  # Generate numerous empty lines, so that grid remains onscreen in same position
+def space():  # Generate numerous empty lines, so that refreshed grid remains onscreen in same position
     print(40*"\n", end="")
 
 
@@ -75,9 +74,8 @@ def get_current_pos(obj):
                 return [line_ind, row_ind]
 
 
-# Accept keyboard input with WASD to move "x" around the grid to any valid empty space
-def move_x():
-    if grid[0][0] == "x":  # Workaround to prevent x being stuck at [0][0]
+def zero_workaround():
+    if grid[0][0] == "x":  # Workaround to prevent x being stuck at [0][0] - NO LONGER NECESSARY
         if keyboard.is_pressed('s'):  # Move down
             down_pos = grid[1][0]
             if is_empty(down_pos):
@@ -88,6 +86,11 @@ def move_x():
             if is_empty(right_pos):
                 grid[0][0] = " "
                 grid[0][1] = "x"
+
+
+# Accept keyboard input with WASD to move "x" around the grid to any valid empty space
+def move_x():
+    # zero_workaround()
 
     line_ind, row_ind = get_current_pos("x")
 
@@ -272,12 +275,13 @@ def main():
     while running:
         # Check for win or lose state on every refresh
         if you_win():
-            print("\n" + f"You win!")
+            print("\n" + "You win!")
             play_again()
         if you_lose():
             py, px = get_current_pos("x")
             grid[py][px] = "0"
             display()
+            time.sleep(speed)
             space()
             print(dead, end="")
             print("\nYou lose. Too bad...")
@@ -292,7 +296,7 @@ def main():
         # obstacle_trigger()  # testing/debug tool, commented out
         generate_obstacle()
         display()
-        time.sleep(0.12)  # Game speed / refresh rate
+        time.sleep(speed)  # Game speed / refresh rate
 
         # Accelerate rocks appearing when there are only a few spaces left
         spaces_left = count_spaces()
