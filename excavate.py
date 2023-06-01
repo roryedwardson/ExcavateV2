@@ -2,6 +2,7 @@ import keyboard
 import time
 import random
 
+# Generate grid
 grid = []
 
 gridWidth = 10
@@ -13,12 +14,15 @@ for y in range(gridHeight):
         row.append(" ")
     grid.append(row)
 
-# Create score variable
-score = 0
+# For the grid's nested loops, first value is y co-ord, second value is x co-ord
+# For example, grid[3][2] = "x"
 
+# Create score and winScore variables
+score = 0
 winScore = gridWidth * 3
 
 
+# Display current state of grid to user, with top, bottom and side borders
 def display():
     space()
     print("_" * ((2 * (gridWidth + 1)) + 1))  # Needs work to allow for different grid sizes
@@ -39,27 +43,25 @@ def display():
     # Needs work to allow for different grid sizes, see above...
 
 
-def space():
+def space():  # Generate numerous empty lines, so that grid remains onscreen in same position
     print(40*"\n", end="")
 
 
-# For the grid's nested loops, first value is y co-ord, second value is x co-ord
-# grid[2][2] = "x"
-
-def is_empty(char):
+def is_empty(char):  # Check if a given position is empty
     if char == " ":
         return True
     else:
         return False
 
 
-def is_rock(char):
+def is_rock(char):  # Check if a given position contains a rock
     if char == "0":
         return True
     else:
         return False
 
 
+# Return coordinates of the location of a given unique string (in this case, "x")
 def get_current_pos(obj):
     for line in grid:
         for char in line:
@@ -69,6 +71,7 @@ def get_current_pos(obj):
                 return [line_ind, row_ind]
 
 
+# Accept keyboard input with WASD to move "x" around the grid to any valid empty space
 def move_x():
     if grid[0][0] == "x":  # Workaround to prevent x being stuck at [0][0]
         if keyboard.is_pressed('s'):  # Move down
@@ -114,6 +117,7 @@ def move_x():
                 grid[line_ind][row_ind] = "x"
 
 
+# Accept keyboard input I to destroy a rock adjacent to "x"
 def excavate_x():
     y_ind, x_ind = get_current_pos("x")
 
@@ -156,14 +160,26 @@ def generate_x():
     grid[random_y][random_x] = "x"
 
 
+# Create a rock at random coordinates (excluding the position of "x")
+# def generate_obstacle():
+#     rand_y = random.randrange(gridHeight)
+#     rand_x = random.randrange(gridWidth)
+#
+#     if grid[rand_y][rand_x] != "x":
+#         grid[rand_y][rand_x] = "0"
+
+# Get list of available spaces, and create a rock at a random choice from that list
 def generate_obstacle():
-    rand_y = random.randrange(gridHeight)
-    rand_x = random.randrange(gridWidth)
+    spaces = get_spaces()
+    random_space = random.choice(spaces)
 
-    if grid[rand_y][rand_x] != "x":
-        grid[rand_y][rand_x] = "0"
+    rand_y = random_space[0]
+    rand_x = random_space[1]
+
+    grid[rand_y][rand_x] = "0"
 
 
+# Testing/debug function to manually generate a rock via keyboard command
 def obstacle_trigger():
     if keyboard.is_pressed("o"):
         generate_obstacle()
@@ -185,6 +201,7 @@ def you_lose():
         return True
 
 
+# Count the number of empty spaces remaining in the grid
 def count_spaces():
     space_count = 0
     for col in grid:
@@ -195,6 +212,22 @@ def count_spaces():
     return space_count
 
 
+# Get list of coordinates which are currently empty spaces, to streamline rock generation
+def get_spaces():
+    space_list = []
+    for col in grid:
+        for r in col:
+            for i in r:
+                if i == " ":
+                    col_ind = grid.index(col)
+                    r_ind = col.index(r)
+                    space_list.append([col_ind, r_ind])
+    return space_list
+
+    # return y, x
+
+
+# Main function, containing while loop with display() screen refreshes
 def main():
     generate_x()
     for i in range(gridWidth):
@@ -205,33 +238,38 @@ def main():
         if excavate_x():
             global score
             score += 1
-        # obstacle_trigger()
+        # obstacle_trigger()  # testing/debug tool, commented out
         generate_obstacle()
         display()
         time.sleep(0.1)
-        spaces_left = count_spaces()  # accelerate rocks appearing when there are only a few spaces left
+
+        # Accelerate rocks appearing when there are only a few spaces left
+        spaces_left = count_spaces()
         if spaces_left <= gridWidth:
             generate_obstacle()
         if spaces_left <= (gridWidth // 2):
             generate_obstacle()
+
+        # Check for win or lose state on every refresh
         if you_win():
             print("\n" + f"You smashed {winScore} rocks. You win!")
-            time.sleep(5)
+            time.sleep(8)
             running = False
         if you_lose():
             py, px = get_current_pos("x")
             grid[py][px] = "0"
             display()
             print("\nYou lose. Too bad...")
-            time.sleep(5)
+            time.sleep(8)
             running = False
 
 
+# Introductory text
 def intro():
     text = ["Welcome to Excavate.\n",
             "You're in a remote cave,", "with no-one around for miles.\n",
             "Rocks are falling all around you.\n",
-            "You have no choice but to smash your way out,", "with your trusty pickaxe.\n",
+            "You have no choice but to smash your way out,", "with the help of your trusty pickaxe.\n",
             "If the cave fills up with rocks,", "you're not getting out alive.\n",
             "Use WASD to move.\n",
             "Press I to smash rocks.\n",
@@ -261,6 +299,8 @@ def intro():
 #     elif user_choice.upper in play_codes:
 #         main()
 
+
+# Call intro and main functions to initiate game
 
 intro()
 main()
