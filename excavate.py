@@ -22,6 +22,7 @@ score = 0
 winScore = gridWidth * 3
 
 
+
 # Display current state of grid to user, with top, bottom and side borders
 def display():
     space()
@@ -231,9 +232,40 @@ def get_spaces():
     # return y, x
 
 
+def x_exists():
+    for col in grid:
+        for r in col:
+            for i in r:
+                if i == "x":
+                    return True
+                else:
+                    return False
+
+
+def reset():
+    # Reset score to zero
+    global score
+    score = 0
+    # Reset all rocks to spaces, reset current x to space
+    for col in grid:
+        for r in col:
+            for i in r:
+                if i == "0":
+                    col_ind = grid.index(col)
+                    r_ind = col.index(r)
+                    grid[col_ind][r_ind] = " "
+                elif i == "x":
+                    col_ind = grid.index(col)
+                    r_ind = col.index(r)
+                    grid[col_ind][r_ind] = " "
+    # Call main()
+    main()
+
+
 # Main function, containing while loop with display() screen refreshes
 def main():
-    generate_x()
+    if not x_exists():
+        generate_x()
     for i in range(gridWidth):
         generate_obstacle()
     running = True
@@ -241,15 +273,16 @@ def main():
         # Check for win or lose state on every refresh
         if you_win():
             print("\n" + f"You win!")
-            time.sleep(8)
-            running = False
+            play_again()
         if you_lose():
             py, px = get_current_pos("x")
             grid[py][px] = "0"
             display()
+            space()
+            print(dead, end="")
             print("\nYou lose. Too bad...")
-            time.sleep(8)
-            running = False
+            generate_x()
+            play_again()
 
         # Accept WASD and I input to move "x" and smash rocks
         move_x()
@@ -259,7 +292,7 @@ def main():
         # obstacle_trigger()  # testing/debug tool, commented out
         generate_obstacle()
         display()
-        time.sleep(0.14)  # Game speed / refresh rate
+        time.sleep(0.12)  # Game speed / refresh rate
 
         # Accelerate rocks appearing when there are only a few spaces left
         spaces_left = count_spaces()
@@ -269,12 +302,25 @@ def main():
             generate_obstacle()
 
 
-title = r"""======  \\   // //===\\  //===\\  ||    ||  //===\\  ======== ======
-||       \\ //  ||      //     \\ ||    || //     \\    ||    ||
+title = r"""======  \\   // //===\\   //=\\   ||    ||   //=\\   ======== ======
+||       \\ //  ||       //   \\  ||    ||  //   \\     ||    ||
 ======    ===   ||      ||=====|| ||    || ||=====||    ||    ======
 ||       // \\  ||      ||     ||  \\  //  ||     ||    ||    ||
 ======  //   \\ \\===// ||     ||   \\//   ||     ||    ||    ======
 """
+
+dead = r"""_______________________
+| 0 0 0 0 0 0 0 0 0 0 |
+| 0 0/‾‾‾‾‾‾‾‾‾‾‾\0 0 |
+| 0 /             \ 0 |
+| 0|   ()  _   ()  |0 |
+| 0 \     / \     / 0 |
+| 0 0\    ‾‾‾    /0 0 |
+| 0 0 |         | 0 0 |
+| 0 0 |_|_|_|_|_| 0 0 |
+| 0 0 0 0 0 0 0 0 0 0 |
+| 0 0 0 0 0 0 0 0 0 0 |
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾"""
 
 
 # Introductory text
@@ -285,7 +331,7 @@ def intro():
             "You have no choice but to smash your way out,", "with the help of your trusty pickaxe.\n",
             "If the cave fills up with rocks,", "you're not getting out alive.\n",
             "Use WASD to move.\n",
-            "Press I to smash rocks.\n",
+            "Hold I to smash rocks.\n",
             f"Score {winScore} to win.\n"]
 
     for line in text:
@@ -301,18 +347,18 @@ def intro():
         time.sleep(1)
 
 
-# def play_again_or_quit():
-#     quit_codes = ["Q", "QUIT"]
-#     play_codes = ["P"]
-#
-#     user_choice = input("To play again, press P. To quit, press Q.")
-#
-#     if user_choice.upper in quit_codes:
-#         quit()
-#     elif user_choice.upper in play_codes:
-#         main()
+def play_again():  # Simplified this to get it working. Any user input will reset the programme.
+    input("Press enter to play again:")
+    reset()
+
+    # print("To play again, press P. To quit, press Q.")
+    # while True:
+    #     if keyboard.is_pressed("p"):
+    #         reset()  # works after win state, does not work after lose state
+    #     elif keyboard.is_pressed("q"):
+    #         quit()  # works
 
 
-# Call intro and main functions to initiate game
+# Call intro and main functions to initiate programme
 intro()
 main()
