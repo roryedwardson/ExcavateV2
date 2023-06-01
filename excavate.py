@@ -167,14 +167,6 @@ def generate_x():
     grid[random_y][random_x] = "x"
 
 
-# Create a rock at random coordinates (excluding the position of "x")
-# def generate_obstacle():
-#     rand_y = random.randrange(gridHeight)
-#     rand_x = random.randrange(gridWidth)
-#
-#     if grid[rand_y][rand_x] != "x":
-#         grid[rand_y][rand_x] = "0"
-
 # Get list of available spaces, and create a rock at a random choice from that list
 def generate_obstacle():
     spaces = get_spaces()
@@ -235,6 +227,7 @@ def get_spaces():
     # return y, x
 
 
+# Check if x already exists, to prevent ever generating more than one
 def x_exists():
     for col in grid:
         for r in col:
@@ -245,6 +238,7 @@ def x_exists():
                     return False
 
 
+# Reset score and grid to initial state, to enable playing another round
 def reset():
     # Reset score to zero
     global score
@@ -261,8 +255,7 @@ def reset():
                     col_ind = grid.index(col)
                     r_ind = col.index(r)
                     grid[col_ind][r_ind] = " "
-    # Call main()
-    main()
+    main()  # Start game
 
 
 # Main function, containing while loop with display() screen refreshes
@@ -278,23 +271,22 @@ def main():
             print("\n" + "You win!")
             play_again()
         if you_lose():
-            py, px = get_current_pos("x")
+            py, px = get_current_pos("x")   # Locate x and replace with a rock
             grid[py][px] = "0"
             display()
             time.sleep(speed)
             space()
-            print(dead, end="")
+            print(dead, end="")             # Show loss screen
             print("\nYou lose. Too bad...")
-            generate_x()
+            generate_x()                    # Generate x at a new position
             play_again()
 
         # Accept WASD and I input to move "x" and smash rocks
-        move_x()
-        if excavate_x():
+        move_x()          # WASD
+        if excavate_x():  # I
             global score
             score += 1
-        # obstacle_trigger()  # testing/debug tool, commented out
-        generate_obstacle()
+        generate_obstacle()  # Create a rock on every refresh
         display()
         time.sleep(speed)  # Game speed / refresh rate
 
