@@ -241,7 +241,7 @@ def main():
         # obstacle_trigger()  # testing/debug tool, commented out
         generate_obstacle()
         display()
-        time.sleep(0.1)
+        time.sleep(0.14)
 
         # Accelerate rocks appearing when there are only a few spaces left
         spaces_left = count_spaces()
@@ -264,9 +264,16 @@ def main():
             running = False
 
 
+title = r"""======  \\   // //===\\  //===\\  ||    ||  //===\\  ======== ======
+||       \\ //  ||      //     \\ ||    || //     \\    ||    ||
+======    ===   ||      ||=====|| ||    || ||=====||    ||    ======
+||       // \\  ||      ||     ||  \\  //  ||     ||    ||    ||
+======  //   \\ \\===// ||     ||   \\//   ||     ||    ||    ======
+"""
+
 # Introductory text
 def intro():
-    text = ["Welcome to Excavate.\n",
+    text = [f"Welcome to \n{title}\n",
             "You're in a remote cave,", "with no-one around for miles.\n",
             "Rocks are falling all around you.\n",
             "You have no choice but to smash your way out,", "with the help of your trusty pickaxe.\n",
