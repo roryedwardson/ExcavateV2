@@ -25,9 +25,12 @@ winScore = gridWidth * 3
 # Display current state of grid to user, with top, bottom and side borders
 def display():
     space()
+    # print((" " * 7) + "EXCAVATE!")
+    print((" " * 7) + f"Target: {winScore}")
     print("_" * ((2 * (gridWidth + 1)) + 1))  # Needs work to allow for different grid sizes
     for line in grid:
         print("| ", end="")
+        # Tried range() and len() but neither worked, so implemented this counter to add | to end of each row.
         ln_counter = 0
         for i in line:
             if ln_counter < gridWidth - 1:
@@ -171,12 +174,13 @@ def generate_x():
 # Get list of available spaces, and create a rock at a random choice from that list
 def generate_obstacle():
     spaces = get_spaces()
-    random_space = random.choice(spaces)
+    if len(spaces) > 0:
+        random_space = random.choice(spaces)
 
-    rand_y = random_space[0]
-    rand_x = random_space[1]
+        rand_y = random_space[0]
+        rand_x = random_space[1]
 
-    grid[rand_y][rand_x] = "0"
+        grid[rand_y][rand_x] = "0"
 
 
 # Testing/debug function to manually generate a rock via keyboard command
@@ -234,25 +238,9 @@ def main():
         generate_obstacle()
     running = True
     while running:
-        move_x()
-        if excavate_x():
-            global score
-            score += 1
-        # obstacle_trigger()  # testing/debug tool, commented out
-        generate_obstacle()
-        display()
-        time.sleep(0.14)
-
-        # Accelerate rocks appearing when there are only a few spaces left
-        spaces_left = count_spaces()
-        if spaces_left <= gridWidth:
-            generate_obstacle()
-        if spaces_left <= (gridWidth // 2):
-            generate_obstacle()
-
         # Check for win or lose state on every refresh
         if you_win():
-            print("\n" + f"You smashed {winScore} rocks. You win!")
+            print("\n" + f"You win!")
             time.sleep(8)
             running = False
         if you_lose():
@@ -263,6 +251,23 @@ def main():
             time.sleep(8)
             running = False
 
+        # Accept WASD and I input to move "x" and smash rocks
+        move_x()
+        if excavate_x():
+            global score
+            score += 1
+        # obstacle_trigger()  # testing/debug tool, commented out
+        generate_obstacle()
+        display()
+        time.sleep(0.14)  # Game speed / refresh rate
+
+        # Accelerate rocks appearing when there are only a few spaces left
+        spaces_left = count_spaces()
+        if spaces_left <= gridWidth:
+            generate_obstacle()
+        if spaces_left <= (gridWidth // 2):
+            generate_obstacle()
+
 
 title = r"""======  \\   // //===\\  //===\\  ||    ||  //===\\  ======== ======
 ||       \\ //  ||      //     \\ ||    || //     \\    ||    ||
@@ -270,6 +275,7 @@ title = r"""======  \\   // //===\\  //===\\  ||    ||  //===\\  ======== ======
 ||       // \\  ||      ||     ||  \\  //  ||     ||    ||    ||
 ======  //   \\ \\===// ||     ||   \\//   ||     ||    ||    ======
 """
+
 
 # Introductory text
 def intro():
@@ -308,6 +314,5 @@ def intro():
 
 
 # Call intro and main functions to initiate game
-
 intro()
 main()
