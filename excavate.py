@@ -1,8 +1,11 @@
 import keyboard
 import time
 import random
+import threading
 
-speed = 0.12  # define speed as a variable to reuse later
+
+speed = 0.12        # define speed as a variable to reuse later
+time_limit = 10     # define time limit to use later
 
 # Generate grid
 grid = []
@@ -19,7 +22,8 @@ for y in range(gridHeight):
 # For the grid's nested loops, first value is y co-ord, second value is x co-ord
 # For example, grid[3][2] = "x"
 
-# Create score and winScore variables
+# Create timer, score and winScore variables
+timer = time_limit
 score = 0
 winScore = gridWidth * 3
 
@@ -27,7 +31,7 @@ winScore = gridWidth * 3
 # Display current state of grid to user, with top, bottom and side borders
 def display():
     space()
-    print((" " * 7) + f"Target: {winScore}")
+    print(f" Time: {timer}" + (" " * 5) + f"Target: {winScore}")
     print("_" * ((2 * (gridWidth + 1)) + 1))  # Needs work to allow for different grid sizes
     for line in grid:
         print("| ", end="")
@@ -243,6 +247,9 @@ def reset():
     # Reset score to zero
     global score
     score = 0
+    # Reset timer
+    global timer
+    timer = time_limit
     # Reset all rocks to spaces, reset current x to space
     for col in grid:
         for r in col:
@@ -276,15 +283,31 @@ def main():
             display()
             time.sleep(speed)
             space()
-            print(dead, end="")             # Show loss screen
-            print("\nYou lose. Too bad...")
+            global timer
+            print(f" Time: {timer}" + (" " * 5) + f"Target: {winScore}")
+            print(dead)             # Show loss screen
+            global score
+            print((" " * ((3 * gridWidth) // 2) + f"Score: {score}"))
+            print("You lose. Too bad...")
+            generate_x()                    # Generate x at a new position
+            play_again()
+        if timer == 0:
+            you_lose()
+            py, px = get_current_pos("x")   # Locate x and replace with a rock
+            grid[py][px] = "0"
+            display()
+            time.sleep(speed)
+            space()
+            print(f" Time: {timer}" + (" " * 5) + f"Target: {winScore}")
+            print(dead)             # Show loss screen
+            print((" " * ((3 * gridWidth) // 2) + f"Score: {score}"))
+            print("Time's up!")
             generate_x()                    # Generate x at a new position
             play_again()
 
         # Accept WASD and I input to move "x" and smash rocks
         move_x()          # WASD
         if excavate_x():  # I
-            global score
             score += 1
         generate_obstacle()  # Create a rock on every refresh
         display()
@@ -334,11 +357,11 @@ def intro():
         print(line, end="\n")
         time.sleep(2)
 
-    countdown = ["Starting in 3...\n",
-                 "2...\n",
-                 "1...\n"]
+    cdown = ["Starting in 3...\n",
+             "2...\n",
+             "1...\n"]
 
-    for line in countdown:
+    for line in cdown:
         print(line, end="\n")
         time.sleep(1)
 
@@ -347,14 +370,28 @@ def play_again():  # Simplified this to get it working. Any user input will rese
     input("Press enter to play again:")
     reset()
 
-    # print("To play again, press P. To quit, press Q.")
-    # while True:
-    #     if keyboard.is_pressed("p"):
-    #         reset()  # works after win state, does not work after lose state
-    #     elif keyboard.is_pressed("q"):
-    #         quit()  # works
 
 
-# Call intro and main functions to initiate programme
+# Create countdown timer as a separate thread
+def countdown():
+    global timer
+
+    timer = time_limit
+
+    while True:
+        for i in range(time_limit):
+            timer -= 1
+            time.sleep(1)
+
+        if timer == 0:
+            # input()
+            timer = time_limit
+
+
+countdown_thread = threading.Thread(target=countdown)
+
+
+# Call intro, start countdown, and call main function to initiate programme
 intro()
+countdown_thread.start()
 main()
