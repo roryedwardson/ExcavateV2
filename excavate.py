@@ -371,7 +371,6 @@ def play_again():  # Simplified this to get it working. Any user input will rese
     reset()
 
 
-
 # Create countdown timer as a separate thread
 def countdown():
     global timer
